@@ -1,0 +1,156 @@
+:root {
+  --github-bg: #ffffff;
+  --github-text: #1a1f23;
+  --github-border: rgba(0, 0, 0, 0.08);
+  --github-primary: #0969da;
+  --github-primary-hover: #0353a4;
+  --github-secondary-bg: rgba(246, 248, fa, 0.7);
+  --github-muted: #57606a;
+  
+  /* Premium UI Additions */
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --premium-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  --card-hover-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.12);
+  
+  /* Pastel Gradients */
+  --grad-purple: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+  --grad-blue: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  --grad-peach: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+  --grad-mint: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  --grad-yellow: linear-gradient(135deg, #fffde7 0%, #fff9c4 100%);
+  --grad-pink: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+  --grad-cyan: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+}
+
+/* GLOBAL RESET FOR THEME */
+body {
+  background-color: #f8fafc !important;
+  color: var(--github-text) !important;
+  margin: 0;
+  font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes ripple {
+  0% { transform: scale(0.95); opacity: 0.5; }
+  100% { transform: scale(1.05); opacity: 0; }
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* NAVBAR GLASSMORPHISM */
+.glass-nav {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--glass-border) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+}
+
+/* NAV LINK HOVER ANIMATION */
+.nav-link-custom {
+  position: relative;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+}
+
+.nav-link-custom::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--github-primary);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-link-custom:hover::after {
+  width: 70%;
+}
+
+.nav-link-custom:hover {
+  transform: translateY(-1px);
+  color: var(--github-primary) !important;
+}
+
+/* BUTTONS */
+.btn-premium {
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  padding: 10px 24px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+.btn-premium:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(9, 105, 218, 0.3) !important;
+}
+
+.btn-premium:active {
+  transform: scale(0.98);
+}
+
+/* FORM CONTROLS */
+.form-control-premium {
+  border-radius: 10px !important;
+  border: 1px solid var(--github-border) !important;
+  padding: 12px 16px !important;
+  transition: all 0.3s ease !important;
+  background: white !important;
+}
+
+.form-control-premium:focus {
+  border-color: var(--github-primary) !important;
+  box-shadow: 0 0 0 4px rgba(9, 105, 218, 0.1) !important;
+}
+
+.hover-scale {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+

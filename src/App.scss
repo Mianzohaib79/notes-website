@@ -1,0 +1,179 @@
+@import"./scss/bootstrap";
+@import"./scss/screen-loader";
+@import"./scss/auth";
+@import"./scss/theme";
+
+
+#root {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    padding-bottom: 0 !important;
+}
+
+/* Professional Social Icons */
+.social-icons-wrapper {
+    .social-icon-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background-color: rgba(140, 149, 159, 0.1);
+        color: var(--github-muted);
+        font-size: 20px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+
+        &:hover {
+            color: var(--github-primary);
+            background-color: rgba(9, 105, 218, 0.1);
+            transform: translateY(-3px) scale(1.15);
+            box-shadow: 0 4px 12px rgba(9, 105, 218, 0.15);
+        }
+    }
+}
+
+/* Layout Spacing Fixes */
+.home-hero {
+    padding-top: 80px !important;
+    padding-bottom: 24px !important;
+}
+
+.favorite-btn {
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
+    &:active {
+        transform: scale(1.4);
+    }
+    
+    svg {
+        transition: all 0.3s ease;
+    }
+}
+
+@keyframes star-pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+.star-pop-animation {
+    animation: star-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Premium Toast Styling */
+.premium-toast {
+    .ant-message-notice-content {
+        background: rgba(255, 255, 255, 0.85) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.5) !important;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15) !important;
+        border-radius: 14px !important;
+        padding: 12px 24px !important;
+        
+        .ant-message-custom-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: var(--github-text);
+            
+            .anticon {
+                font-size: 18px;
+            }
+        }
+    }
+}
+
+.auth {
+    min-height: 80vh !important;
+}
+
+/* Global Responsive Fixes */
+html, body {
+    width: 100%;
+    position: relative;
+}
+
+/* Sidebar Drawer for Mobile - ONLY for screens below 992px */
+@media (max-width: 991.98px) {
+    .ant-layout-sider.custom-sidebar {
+        position: fixed !important;
+        height: 100vh !important;
+        z-index: 1050 !important;
+        top: 0;
+        left: 0;
+        box-shadow: 10px 0 30px rgba(0,0,0,0.1) !important;
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        
+        &.ant-layout-sider-collapsed {
+            transform: translateX(-100%);
+            width: 0 !important;
+            min-width: 0 !important;
+            max-width: 0 !important;
+        }
+        
+        &:not(.ant-layout-sider-collapsed) {
+            transform: translateX(0);
+            width: 280px !important;
+            min-width: 280px !important;
+            max-width: 280px !important;
+        }
+    }
+
+    /* Prevent content area from shifting or being pushed on mobile */
+    .ant-layout {
+        flex-direction: column !important;
+    }
+    
+    .ant-layout-content {
+        width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Overlay Backdrop for Mobile Sidebar */
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(4px);
+        z-index: 1040;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        display: block !important;
+        
+        &.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+}
+
+/* Ensure Overlay is completely disabled on Desktop */
+@media (min-width: 992px) {
+    .sidebar-overlay {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }
+    
+    /* Desktop Sider Fixes */
+    .ant-layout-sider.custom-sidebar {
+        position: relative !important;
+        height: auto !important;
+        transform: none !important;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.01) !important;
+    }
+}
+
+/* Fix for horizontal scroll on mobile */
+.container-fluid {
+}
