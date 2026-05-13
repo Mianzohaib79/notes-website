@@ -85,9 +85,9 @@ const Navbar = () => {
                                 style={{ width: '40px', height: '40px', borderRadius: '10px' }}
                             />
                         )}
-                        <Link to="/" className="navbar-brand m-0 p-0 d-flex align-items-center hover-scale">
+                        <div className="navbar-brand m-0 p-0 d-flex align-items-center hover-scale">
                             <Logo />
-                        </Link>
+                        </div>
                     </div>
 
                     {/* Right Side Group (Permanent Icons + Toggler) */}
