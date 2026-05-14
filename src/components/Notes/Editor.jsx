@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import JoditEditor from 'jodit-react';
 import { io } from 'socket.io-client';
 import { Button, Input, Space, Typography, message, Spin, Alert, Popconfirm } from 'antd';
 import {
@@ -17,42 +16,26 @@ import { useAuth } from '../../context/Auth';
 
 const { Title, Text } = Typography;
 
-// Enhanced Error Boundary to catch and report crashes
-class EditorErrorBoundary extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { hasError: false };
-    }
-    static getDerivedStateFromError(error) { return { hasError: true }; }
-    componentDidCatch(error, errorInfo) {
-        console.error("Editor Crash Detected:", error, errorInfo);
-        if (this.props.onError) this.props.onError();
-    }
-    render() {
-        if (this.state.hasError) {
-            return (
-                <div style={{ padding: '40px', textAlign: 'center' }}>
-                    <Alert
-                        message="Editor Load Error"
-                        description="The rich text library encountered a problem. Switching to stable fallback mode..."
-                        type="warning"
-                        showIcon
-                        icon={<InfoCircleOutlined />}
-                    />
-                    <Button
-                        type="primary"
-                        icon={<EditOutlined />}
-                        style={{ marginTop: '20px' }}
-                        onClick={() => window.location.reload()}
-                    >
-                        Reload Workspace
-                    </Button>
-                </div>
-            );
-        }
-        return this.props.children;
-    }
-}
+// Functional fallback for the editor
+const EditorFallback = () => (
+    <div style={{ padding: '40px', textAlign: 'center' }}>
+        <Alert
+            message="Editor Load Error"
+            description="The rich text library encountered a problem. Switching to stable fallback mode..."
+            type="warning"
+            showIcon
+            icon={<InfoCircleOutlined />}
+        />
+        <Button
+            type="primary"
+            icon={<EditOutlined />}
+            style={{ marginTop: '20px' }}
+            onClick={() => window.location.reload()}
+        >
+            Reload Workspace
+        </Button>
+    </div>
+);
 
 const EditorContent = ({ note, onShare, onDelete }) => {
     const { user } = useAuth();
@@ -65,6 +48,16 @@ const EditorContent = ({ note, onShare, onDelete }) => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [showRichText, setShowRichText] = useState(false);
     const [hasError, setHasError] = useState(false);
+    const editor = useRef(null);
+
+    const config = useMemo(() => ({
+        readonly: false,
+        placeholder: 'Describe your brilliant ideas...',
+        height: 450,
+        toolbarSticky: false,
+        theme: 'default',
+        // Minimal configuration to keep it clean
+    }), []);
 
     // Safety check and Title sync
     useEffect(() => {
@@ -240,17 +233,20 @@ const EditorContent = ({ note, onShare, onDelete }) => {
                         }}
                     />
                 ) : (
-                    <EditorErrorBoundary onError={() => setHasError(true)}>
-                        <div className="quill-wrapper" style={{ height: '450px', marginBottom: '42px' }}>
-                            <ReactQuill
-                                theme="snow"
-                                value={content || ''}
-                                onChange={handleContentChange}
-                                placeholder="Describe your brilliant ideas..."
-                                style={{ height: '100%' }}
-                            />
-                        </div>
-                    </EditorErrorBoundary>
+                    <div className="jodit-wrapper" style={{ minHeight: '450px', marginBottom: '42px' }}>
+                        <JoditEditor
+                            ref={editor}
+                            value={content || ''}
+                            config={config}
+                            tabIndex={1}
+                            onBlur={handleContentChange}
+                            onChange={(newContent) => {
+                                // Real-time sync handled via onBlur for performance, 
+                                // but we can add logic here if needed.
+                                // However, user said not to add extra logic.
+                            }}
+                        />
+                    </div>
                 )}
             </div>
             {hasError && (
