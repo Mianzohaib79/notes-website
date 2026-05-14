@@ -79,7 +79,7 @@ const EditorContent = ({ note, onShare, onDelete }) => {
     useEffect(() => {
         if (!note?._id) return;
 
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        const apiUrl = import.meta.env.VITE_API_URL;
         let s;
         try {
             s = io(apiUrl);

@@ -16,7 +16,7 @@ const AuthContext = ({ children }) => {
 
         if (!token) { setIsAppLoading(false); return; }
 
-        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000"
+        const apiUrl = import.meta.env.VITE_API_URL
         axios.get(`${apiUrl}/auth/user`, { headers: { Authorization: `Bearer ${jwt || token}` } })
             .then((res) => {
                 const { status, data } = res

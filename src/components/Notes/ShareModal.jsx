@@ -16,8 +16,8 @@ const ShareModal = ({ visible, note, onClose, onRefresh }) => {
         setIsProcessing(true);
         try {
             const token = localStorage.getItem("jwt");
-            const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000"
-            await axios.post(`${apiUrl}/notes/${note._id}/share`, 
+            const apiUrl = import.meta.env.VITE_API_URL
+            await axios.post(`${apiUrl}/notes/${note._id}/share`,
                 { email, permission },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -34,7 +34,8 @@ const ShareModal = ({ visible, note, onClose, onRefresh }) => {
     const handleRemove = async (userId) => {
         try {
             const token = localStorage.getItem("jwt");
-            await axios.delete(`http://localhost:8000/notes/${note._id}/remove-user`, {
+            const apiUrl = import.meta.env.VITE_API_URL
+            await axios.delete(`${apiUrl}/notes/${note._id}/remove-user`, {
                 data: { userId },
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -56,10 +57,10 @@ const ShareModal = ({ visible, note, onClose, onRefresh }) => {
             <div style={{ marginBottom: '24px', marginTop: '16px' }}>
                 <Text strong>Add people</Text>
                 <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                    <Input 
-                        placeholder="user@example.com" 
-                        value={email} 
-                        onChange={(e) => setEmail(e.target.value)} 
+                    <Input
+                        placeholder="user@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                     />
                     <Select value={permission} onChange={setPermission} style={{ width: 120 }}>
                         <Option value="viewer">Viewer</Option>

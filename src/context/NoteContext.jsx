@@ -15,7 +15,7 @@ export const NoteProvider = ({ children }) => {
     const [recentShared, setRecentShared] = useState([]);
     const [socket, setSocket] = useState(null);
 
-    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000"
+    const apiUrl = import.meta.env.VITE_API_URL
 
     useEffect(() => {
         if (isAuth && user?.uid) {
@@ -23,7 +23,7 @@ export const NoteProvider = ({ children }) => {
             setSocket(s);
 
             // Join personal room for notifications
-            s.emit('join-note', user.uid); 
+            s.emit('join-note', user.uid);
 
             s.on('new-notification', (data) => {
                 if (window.toastify) {
@@ -45,7 +45,7 @@ export const NoteProvider = ({ children }) => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setNotes(res.data.notes);
-            
+
             // Extract top 5 recently shared notes for sidebar
             const shared = res.data.notes
                 .filter(n => n.sharedWith && n.sharedWith.length > 0)
@@ -92,7 +92,7 @@ export const NoteProvider = ({ children }) => {
             const res = await axios.post(`${apiUrl}/notes/${id}/favorite`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            
+
             // INSTANT SYNC: Update the global auth user object with the returned data
             if (res.data.user && dispatch) {
                 dispatch({ isAuth: true, user: res.data.user });
@@ -100,10 +100,10 @@ export const NoteProvider = ({ children }) => {
                 // Fallback to profile refresh if direct update unavailable
                 if (readProfile) readProfile();
             }
-            
+
             // Refresh notes to ensure any local note state is synced
-            fetchNotes(); 
-            
+            fetchNotes();
+
             // Show premium toast notification
             if (res.data.message) {
                 const isAdding = !user?.favorites?.some(favId => String(favId?._id || favId) === String(id));
@@ -159,11 +159,11 @@ export const NoteProvider = ({ children }) => {
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
 
     return (
-        <NoteContext.Provider value={{ 
-            notes, 
-            activeNote, 
-            setActiveNote, 
-            isLoading, 
+        <NoteContext.Provider value={{
+            notes,
+            activeNote,
+            setActiveNote,
+            isLoading,
             recentShared,
             selectedCategory,
             setSelectedCategory,
@@ -171,8 +171,8 @@ export const NoteProvider = ({ children }) => {
             setIsSidebarCollapsed,
             isNoteModalOpen,
             setIsNoteModalOpen,
-            fetchNotes, 
-            createNote, 
+            fetchNotes,
+            createNote,
             updateNote,
             toggleFavorite,
             deleteNote,
