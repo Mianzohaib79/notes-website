@@ -2,8 +2,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { message } from 'antd';
 import { StarFilled, StarOutlined } from '@ant-design/icons';
-import { io } from 'socket.io-client';
+// import { io } from 'socket.io-client';
 import { useAuth } from './Auth';
+import Pusher from 'pusher-js';
 
 export const NoteContext = createContext();
 
@@ -13,28 +14,73 @@ export const NoteProvider = ({ children }) => {
     const [activeNote, setActiveNote] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [recentShared, setRecentShared] = useState([]);
-    const [socket, setSocket] = useState(null);
+    // const [socket, setSocket] = useState(null);
+    // const [pusherChannel, setPusherChannel] = useState(null);
 
     const apiUrl = import.meta.env.VITE_API_URL
 
+    // useEffect(() => {
+    //     if (isAuth && user?.uid) {
+    //         const s = io(apiUrl);
+    //         setSocket(s);
+
+    //         // Join personal room for notifications
+    //         s.emit('join-note', user.uid);
+
+    //         s.on('new-notification', (data) => {
+    //             if (window.toastify) {
+    //                 window.toastify(data.message, "info");
+    //             }
+    //             fetchNotes(); // Refresh notes list
+    //         });
+
+    //         return () => s.disconnect();
+    //     }
+    // }, [isAuth, user]);
+
     useEffect(() => {
-        if (isAuth && user?.uid) {
-            const s = io(apiUrl);
-            setSocket(s);
+        if (!isAuth) return;
 
-            // Join personal room for notifications
-            s.emit('join-note', user.uid);
+        const pusher = new Pusher(
+            import.meta.env.VITE_PUSHER_KEY,
+            {
+                cluster: import.meta.env.VITE_PUSHER_CLUSTER,
+            }
+        );
 
-            s.on('new-notification', (data) => {
-                if (window.toastify) {
-                    window.toastify(data.message, "info");
-                }
-                fetchNotes(); // Refresh notes list
-            });
+        const channel = pusher.subscribe("notes-channel");
 
-            return () => s.disconnect();
-        }
-    }, [isAuth, user]);
+        channel.bind("note-created", (data) => {
+            setNotes((prev) => [data.note, ...prev]);
+
+            message.success(data.message || "New note created");
+        });
+
+        channel.bind("note-updated", (data) => {
+            setNotes((prev) =>
+                prev.map((note) =>
+                    note._id === data.note._id
+                        ? data.note
+                        : note
+                )
+            );
+        });
+
+        channel.bind("note-deleted", (data) => {
+            setNotes((prev) =>
+                prev.filter(
+                    (note) => note._id !== data.noteId
+                )
+            );
+
+            message.success(data.message || "Note deleted");
+        });
+
+        return () => {
+            channel.unbind_all();
+            channel.unsubscribe();
+        };
+    }, [isAuth]);
 
     const fetchNotes = async () => {
         if (!isAuth) return;

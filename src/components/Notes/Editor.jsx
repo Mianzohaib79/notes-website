@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import JoditEditor from 'jodit-react';
-import { io } from 'socket.io-client';
+// import { io } from 'socket.io-client';
 import { Button, Input, Space, Typography, message, Spin, Alert, Popconfirm } from 'antd';
 import {
     SaveOutlined,
@@ -76,37 +76,40 @@ const EditorContent = ({ note, onShare, onDelete }) => {
     }, [note?._id]);
 
     // Socket.io for real-time collaboration
-    useEffect(() => {
-        if (!note?._id) return;
+    // useEffect(() => {
+    //     if (!note?._id) return;
 
-        const apiUrl = import.meta.env.VITE_API_URL;
-        let s;
-        try {
-            s = io(apiUrl);
-            setSocket(s);
-            s.emit('join-note', note._id);
-            s.on('note-updated', (newContent) => {
-                if (typeof newContent === 'string' && newContent !== content) {
-                    setContent(newContent);
-                }
-            });
-        } catch (err) {
-            console.error("Socket error:", err);
-        }
+    //     const apiUrl = import.meta.env.VITE_API_URL;
+    //     let s;
+    //     try {
+    //         s = io(apiUrl);
+    //         setSocket(s);
+    //         s.emit('join-note', note._id);
+    //         s.on('note-updated', (newContent) => {
+    //             if (typeof newContent === 'string' && newContent !== content) {
+    //                 setContent(newContent);
+    //             }
+    //         });
+    //     } catch (err) {
+    //         console.error("Socket error:", err);
+    //     }
 
-        return () => {
-            if (s) {
-                s.emit('leave-note', note._id);
-                s.disconnect();
-            }
-        };
-    }, [note?._id]);
+    //     return () => {
+    //         if (s) {
+    //             s.emit('leave-note', note._id);
+    //             s.disconnect();
+    //         }
+    //     };
+    // }, [note?._id]);
 
+    // const handleContentChange = (value) => {
+    //     setContent(value);
+    //     if (socket && note?._id) {
+    //         socket.emit('edit-note', { noteId: note._id, content: value });
+    //     }
+    // };
     const handleContentChange = (value) => {
         setContent(value);
-        if (socket && note?._id) {
-            socket.emit('edit-note', { noteId: note._id, content: value });
-        }
     };
 
     const handleSave = async () => {
@@ -158,14 +161,14 @@ const EditorContent = ({ note, onShare, onDelete }) => {
     }
 
     return (
-        <div className="editor-container fade-in" style={{ padding: '32px', backgroundColor: 'var(--github-bg)', minHeight: '600px', borderRadius: '24px' }}>
-            <div style={{ marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="editor-container fade-in" style={{ padding: window.innerWidth < 768 ? '12px' : '32px', backgroundColor: 'var(--github-bg)', minHeight: '600px', borderRadius: '24px' }}>
+            <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexDirection: window.innerWidth < 768 ? 'column' : 'row', gap: '14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1 }}>
                     <Input
                         variant="borderless"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        style={{ fontSize: '28px', fontWeight: '800', padding: 0, color: 'var(--github-text)', letterSpacing: '-0.5px' }}
+                        style={{ fontSize: window.innerWidth < 768 ? '20px' : '28px', fontWeight: '800', padding: 0, color: 'var(--github-text)', letterSpacing: '-0.5px' }}
                         placeholder="Untitled Masterpiece..."
                     />
                     <Button
@@ -176,7 +179,10 @@ const EditorContent = ({ note, onShare, onDelete }) => {
                         style={{ fontSize: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     />
                 </div>
-                <Space size="middle">
+                <Space size="small" wrap
+                    style={{
+                        width: window.innerWidth < 768 ? '100%' : 'auto'
+                    }}>
                     <Popconfirm
                         title="Delete this note?"
                         description="This action cannot be undone."
@@ -225,7 +231,7 @@ const EditorContent = ({ note, onShare, onDelete }) => {
                         placeholder="Start your thoughts here..."
                         className="form-control-premium border-0"
                         style={{
-                            height: '450px',
+                            height: window.innerWidth < 768 ? '300px' : '450px',
                             padding: '24px',
                             fontSize: '16px',
                             border: 'none',
@@ -233,7 +239,7 @@ const EditorContent = ({ note, onShare, onDelete }) => {
                         }}
                     />
                 ) : (
-                    <div className="jodit-wrapper" style={{ minHeight: '450px', marginBottom: '42px' }}>
+                    <div className="jodit-wrapper" style={{ minHeight: window.innerWidth < 768 ? '300px' : '450px', marginBottom: '20px', width: '100%', overflowX: 'hidden', }}>
                         <JoditEditor
                             ref={editor}
                             value={content || ''}

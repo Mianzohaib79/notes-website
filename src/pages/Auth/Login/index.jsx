@@ -55,13 +55,13 @@ const Login = () => {
     }
 
     return (
-        <main className="auth flex-center fade-in" style={{ minHeight: '90vh', background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
+        <main className="auth flex-center fade-in" style={{ height: '100vh', background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)', padding: '20px 0', overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <div className="container">
-                <div className="text-center mb-5 hover-scale" style={{ cursor: 'pointer' }}>
+                {/* <div className="text-center mb-5 hover-scale" style={{ cursor: 'pointer' }}>
                     <Logo size="large" />
-                </div>
-                <div className="card shadow-lg border-0 mx-auto" style={{ maxWidth: '450px', borderRadius: '24px', padding: '48px', background: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(10px)' }}>
-                    <Title level={2} className="text-center mb-2" style={{ fontWeight: 800, letterSpacing: '-0.5px' }}>Welcome Back</Title>
+                </div> */}
+                <div className="card shadow-lg border-0 mx-auto" style={{ maxWidth: '400px', borderRadius: '24px', padding: '32px', background: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(10px)' }}>
+                    <Title level={3} className="text-center mb-2" style={{ fontWeight: 700, letterSpacing: '-0.5px', marginBottom: "6px" }}>Welcome Back Notes</Title>
                     <Paragraph className="text-center mb-4" type="secondary">Enter your details to access your workspace</Paragraph>
 
                     <Form layout="vertical" onFinish={handleLogin}>

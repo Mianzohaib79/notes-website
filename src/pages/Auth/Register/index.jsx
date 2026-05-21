@@ -57,21 +57,21 @@ const Register = () => {
     }
 
     return (
-        <main className="auth flex-center fade-in" style={{ minHeight: '90vh', background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)', padding: '40px 0' }}>
-            <div className="container">
-                <div className="text-center mb-5 hover-scale" style={{ cursor: 'pointer' }}>
+        <main className="auth flex-center fade-in" style={{ height: '100dvh', background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)', overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: "12px" }}>
+            <div className="w-100 d-flex justify-content-center">
+                {/* <div className="text-center mb-5 hover-scale" style={{ cursor: 'pointer' }}>
                     <Logo size="large" />
-                </div>
-                <div className="card shadow-lg border-0 mx-auto" style={{ maxWidth: '500px', borderRadius: '24px', padding: '48px', background: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(10px)' }}>
-                    <Title level={2} className="text-center mb-2" style={{ fontWeight: 800, letterSpacing: '-0.5px' }}>Join the Workspace</Title>
+                </div> */}
+                <div className="card shadow-lg border-0 mx-auto" style={{ width: '100%', maxWidth: '430px', borderRadius: '24px', padding: '24px', background: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(10px)' }}>
+                    <Title level={3} className="text-center mb-2" style={{ fontWeight: 800, letterSpacing: '-0.5px' }}>Join the Notes App</Title>
                     <Paragraph className="text-center mb-4" type="secondary">Create your account to start organized thinking</Paragraph>
 
-                    <Form layout="vertical" onFinish={handleRegister}>
+                    <Form layout="vertical" onFinish={handleRegister} style={{ marginBottom: "0" }}>
                         <Item label={<Text strong style={{ fontSize: '14px' }}>Full Name</Text>} required>
                             <Input
                                 type="text"
                                 size="large"
-                                placeholder="John Doe"
+                                placeholder="Full Name"
                                 name="name"
                                 onChange={handleChange}
                                 className="form-control-premium"
@@ -81,7 +81,7 @@ const Register = () => {
                             <Input
                                 type="email"
                                 size="large"
-                                placeholder="name@example.com"
+                                placeholder="Enter your email"
                                 name="email"
                                 onChange={handleChange}
                                 className="form-control-premium"
@@ -117,7 +117,7 @@ const Register = () => {
                             block
                             htmlType="submit"
                             loading={isProcessing}
-                            className="btn-premium py-3 h-auto"
+                            className="btn-premium py-2 h-auto"
                             style={{ fontSize: '16px' }}
                         >
                             Create Account
