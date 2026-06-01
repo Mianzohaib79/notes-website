@@ -245,13 +245,11 @@ const EditorContent = ({ note, onShare, onDelete }) => {
                             value={content || ''}
                             config={config}
                             tabIndex={1}
-                            onBlur={handleContentChange}
                             onChange={(newContent) => {
-                                // Real-time sync handled via onBlur for performance, 
-                                // but we can add logic here if needed.
-                                // However, user said not to add extra logic.
+                                setContent(newContent);
                             }}
                         />
+
                     </div>
                 )}
             </div>

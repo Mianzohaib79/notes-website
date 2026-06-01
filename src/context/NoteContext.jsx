@@ -108,11 +108,26 @@ export const NoteProvider = ({ children }) => {
     const createNote = async (title, content = "") => {
         try {
             const token = localStorage.getItem("jwt");
-            const res = await axios.post(`${apiUrl}/notes`, { title, content }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setNotes([res.data.note, ...notes]);
+
+            const payload = {
+                title: title || "Untitled Note",
+                content: content || ""
+            };
+
+            const res = await axios.post(
+                `${apiUrl}/notes`,
+                payload,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            setNotes(prev => [res.data.note, ...prev]);
+
             return res.data.note;
+
         } catch (error) {
             console.error("Error creating note:", error);
         }
@@ -171,10 +186,25 @@ export const NoteProvider = ({ children }) => {
     const updateNote = async (id, data) => {
         try {
             const token = localStorage.getItem("jwt");
-            await axios.put(`${apiUrl}/notes/${id}`, data, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setNotes(notes.map(n => n._id === id ? { ...n, ...data } : n));
+
+            const res = await axios.put(
+                `${apiUrl}/notes/${id}`,
+                data,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            setNotes(prev =>
+                prev.map(n =>
+                    n._id === id ? res.data.note : n
+                )
+            );
+
+            fetchNotes();
+
         } catch (error) {
             console.error("Error updating note:", error);
         }
