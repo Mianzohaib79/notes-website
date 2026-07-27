@@ -139,7 +139,10 @@ export const NoteProvider = ({ children }) => {
             await axios.delete(`${apiUrl}/notes/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setNotes(notes.filter(n => n._id !== id));
+            setNotes(prev => prev.filter(n => n._id !== id));
+            if (activeNote?._id === id) {
+                setActiveNote(null);
+            }
             return true;
         } catch (error) {
             console.error("Error deleting note:", error);
@@ -203,10 +206,16 @@ export const NoteProvider = ({ children }) => {
                 )
             );
 
+            if (activeNote?._id === id) {
+                setActiveNote(res.data.note);
+            }
+
             fetchNotes();
+            return res.data.note;
 
         } catch (error) {
             console.error("Error updating note:", error);
+            throw error;
         }
     };
 
