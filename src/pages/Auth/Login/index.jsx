@@ -31,7 +31,7 @@ const Login = () => {
 
         setIsProcessing(true)
 
-        const apiUrl = import.meta.env.VITE_API_URL
+        const apiUrl = import.meta.env.VITE_API_URL || "https://notes-website-ba6w.vercel.app"
         axios.post(`${apiUrl}/auth/login`, userData)
 
             .then((res) => {

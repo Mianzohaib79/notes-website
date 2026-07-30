@@ -17,34 +17,18 @@ export const NoteProvider = ({ children }) => {
     // const [socket, setSocket] = useState(null);
     // const [pusherChannel, setPusherChannel] = useState(null);
 
-    const apiUrl = import.meta.env.VITE_API_URL
-
-    // useEffect(() => {
-    //     if (isAuth && user?.uid) {
-    //         const s = io(apiUrl);
-    //         setSocket(s);
-
-    //         // Join personal room for notifications
-    //         s.emit('join-note', user.uid);
-
-    //         s.on('new-notification', (data) => {
-    //             if (window.toastify) {
-    //                 window.toastify(data.message, "info");
-    //             }
-    //             fetchNotes(); // Refresh notes list
-    //         });
-
-    //         return () => s.disconnect();
-    //     }
-    // }, [isAuth, user]);
+    const apiUrl = import.meta.env.VITE_API_URL || "https://notes-website-ba6w.vercel.app";
 
     useEffect(() => {
         if (!isAuth) return;
 
+        const pusherKey = import.meta.env.VITE_PUSHER_KEY || "c881d588e49a30429a75";
+        const pusherCluster = import.meta.env.VITE_PUSHER_CLUSTER || "ap2";
+
         const pusher = new Pusher(
-            import.meta.env.VITE_PUSHER_KEY,
+            pusherKey,
             {
-                cluster: import.meta.env.VITE_PUSHER_CLUSTER,
+                cluster: pusherCluster,
             }
         );
 

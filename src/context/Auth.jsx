@@ -16,7 +16,7 @@ const AuthContext = ({ children }) => {
 
         if (!token) { setIsAppLoading(false); return; }
 
-        const apiUrl = import.meta.env.VITE_API_URL
+        const apiUrl = import.meta.env.VITE_API_URL || "https://notes-website-ba6w.vercel.app"
         axios.get(`${apiUrl}/auth/user`, { headers: { Authorization: `Bearer ${jwt || token}` } })
             .then((res) => {
                 const { status, data } = res
