@@ -25,53 +25,44 @@ export const NoteProvider = ({ children }) => {
         const pusherKey = import.meta.env.VITE_PUSHER_KEY || "c881d588e49a30429a75";
         const pusherCluster = import.meta.env.VITE_PUSHER_CLUSTER || "ap2";
 
-        const pusher = new Pusher(
-            pusherKey,
-            {
-                cluster: pusherCluster,
-            }
-        );
+        const pusher = new Pusher(pusherKey, {
+            cluster: pusherCluster,
+            forceTLS: true,
+        });
 
         const channel = pusher.subscribe("notes-channel");
 
         channel.bind("note-created", (data) => {
             setNotes((prev) => [data.note, ...prev]);
-
             message.success(data.message || "New note created");
         });
 
         channel.bind("note-updated", (data) => {
             setNotes((prev) =>
                 prev.map((note) =>
-                    note._id === data.note._id
-                        ? data.note
-                        : note
+                    note._id === data.note._id ? data.note : note
                 )
             );
         });
 
         channel.bind("note-deleted", (data) => {
             setNotes((prev) =>
-                prev.filter(
-                    (note) => note._id !== data.noteId
-                )
+                prev.filter((note) => note._id !== data.noteId)
             );
-
             message.success(data.message || "Note deleted");
         });
 
         channel.bind("note-shared", (data) => {
             fetchNotes();
-            if (!user?._id || String(data.sharedWithUserId) === String(user._id)) {
-                message.info(data.message || "A note was shared with you!");
-            }
+            message.info(data.message || "A note was shared with you!");
         });
 
         return () => {
             channel.unbind_all();
-            channel.unsubscribe();
+            pusher.unsubscribe("notes-channel");
+            pusher.disconnect();
         };
-    }, [isAuth, user?._id]);
+    }, [isAuth]);
 
     const fetchNotes = async () => {
         if (!isAuth) return;
