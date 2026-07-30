@@ -13,7 +13,7 @@ const { Title, Text } = Typography;
 
 const Home = () => {
     const { user } = useAuth();
-    const { notes, recentShared, activeNote, setActiveNote, createNote, searchNotes, isSidebarCollapsed, setIsSidebarCollapsed, setIsNoteModalOpen, selectedCategory, setSelectedCategory } = useNotes();
+    const { notes, activeNote, setActiveNote, createNote, searchNotes, isSidebarCollapsed, setIsSidebarCollapsed, setIsNoteModalOpen, selectedCategory, setSelectedCategory } = useNotes();
     const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
 

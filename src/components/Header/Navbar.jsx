@@ -36,21 +36,7 @@ const Navbar = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [prevScrollPos, isNoteModalOpen]);
 
-    // Force hide if modal opens
-    useEffect(() => {
-        if (isNoteModalOpen) {
-            setIsVisible(false);
-        } else {
-            setIsVisible(true);
-        }
-    }, [isNoteModalOpen]);
-
     const items = [
-        // {
-        //     key: 'updateProfile',
-        //     label: 'Update Profile',
-        //     onClick: () => navigate('/update-profile')
-        // },
         {
             key: 'logout',
             label: 'Logout',
@@ -60,6 +46,7 @@ const Navbar = () => {
     ];
 
     const isDesktopSidebarOpen = isAuth && isHomePage && !isSidebarCollapsed && window.innerWidth >= 992;
+    const isNavbarVisible = isVisible && !isNoteModalOpen;
 
     const navbarStyle = {
         position: 'fixed',
@@ -68,7 +55,7 @@ const Navbar = () => {
         right: 0,
         zIndex: 1100,
         transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-        transform: isVisible ? 'translateY(0)' : 'translateY(-100%)',
+        transform: isNavbarVisible ? 'translateY(0)' : 'translateY(-100%)',
         minHeight: '64px'
     };
 

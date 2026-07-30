@@ -45,7 +45,7 @@ const ShareModal = ({ visible, note, onClose, onRefresh }) => {
             });
             message.success('User removed');
             if (onRefresh) onRefresh();
-        } catch (error) {
+        } catch {
             message.error('Failed to remove user');
         }
     };

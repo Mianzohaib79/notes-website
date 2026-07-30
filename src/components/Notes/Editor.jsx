@@ -49,7 +49,7 @@ const EditorContent = ({ note, onShare, onDelete }) => {
     const [isDeleting, setIsDeleting] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     const [showRichText, setShowRichText] = useState(false);
-    const [hasError, setHasError] = useState(false);
+    const [hasError] = useState(false);
 
     const config = useMemo(() => ({
         readonly: false,
@@ -89,7 +89,7 @@ const EditorContent = ({ note, onShare, onDelete }) => {
             setIsLoaded(false);
             setShowRichText(false);
         }
-    }, [note?._id]);
+    }, [note?._id, note?.content, note?.title]);
 
     const handleSave = async () => {
         if (!note?._id) return;
@@ -99,7 +99,7 @@ const EditorContent = ({ note, onShare, onDelete }) => {
             await updateNote(note._id, { title, content: latestContent });
             contentRef.current = latestContent;
             message.success('Note saved successfully');
-        } catch (error) {
+        } catch {
             message.error('Failed to save note');
         } finally {
             setIsSaving(false);
@@ -110,7 +110,7 @@ const EditorContent = ({ note, onShare, onDelete }) => {
         if (!note?._id) return;
         try {
             await toggleFavorite(note._id);
-        } catch (err) {
+        } catch {
             message.error('Failed to update favorite status');
         }
     };

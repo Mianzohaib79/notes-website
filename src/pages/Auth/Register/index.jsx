@@ -25,8 +25,7 @@ const Register = () => {
     const handleRegister = () => {
         let { name, email, password, confirmPassword } = state
 
-        const fullName = name.trim()
-        if (name.length < 3) { return window.toastify("please enter your name", "error") }
+        if (name.trim().length < 3) { return window.toastify("please enter your name", "error") }
         if (!window.isValidEmail(email)) { return window.toastify("Please enter your valid email", "error") }
         if (password.length < 6) { return window.toastify("password must be at least 6 chars", "error") }
         if (confirmPassword !== password) { return window.toastify("password not match", "error") }
