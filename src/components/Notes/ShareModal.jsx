@@ -16,11 +16,15 @@ const ShareModal = ({ visible, note, onClose, onRefresh }) => {
         setIsProcessing(true);
         try {
             const token = localStorage.getItem("jwt");
-            const apiUrl = import.meta.env.VITE_API_URL || "https://notes-website-ba6w.vercel.app"
-            await axios.post(`${apiUrl}/notes/${note._id}/share`,
-                { email, permission },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            const apiUrl = import.meta.env.VITE_API_URL || "https://notes-website-ba6w.vercel.app";
+            await axios.post(`${apiUrl}/notes/${note._id}/share`, {
+                email: email.trim(),
+                permission
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             message.success(`Shared with ${email}`);
             setEmail('');
             if (onRefresh) onRefresh();
@@ -34,7 +38,7 @@ const ShareModal = ({ visible, note, onClose, onRefresh }) => {
     const handleRemove = async (userId) => {
         try {
             const token = localStorage.getItem("jwt");
-            const apiUrl = import.meta.env.VITE_API_URL || "https://notes-website-ba6w.vercel.app"
+            const apiUrl = import.meta.env.VITE_API_URL || "https://notes-website-ba6w.vercel.app";
             await axios.delete(`${apiUrl}/notes/${note._id}/remove-user`, {
                 data: { userId },
                 headers: { Authorization: `Bearer ${token}` }
