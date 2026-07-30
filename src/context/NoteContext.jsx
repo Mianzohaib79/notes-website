@@ -22,7 +22,7 @@ export const NoteProvider = ({ children }) => {
     useEffect(() => {
         if (!isAuth) return;
 
-        const pusherKey = import.meta.env.VITE_PUSHER_KEY || "c881d588e49a30429a75";
+        const pusherKey = import.meta.env.VITE_PUSHER_KEY;
         const pusherCluster = import.meta.env.VITE_PUSHER_CLUSTER || "ap2";
 
         const pusher = new Pusher(pusherKey, {
