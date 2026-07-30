@@ -76,11 +76,18 @@ export const NoteProvider = ({ children }) => {
             message.success(data.message || "Note deleted");
         });
 
+        channel.bind("note-shared", (data) => {
+            fetchNotes();
+            if (!user?._id || String(data.sharedWithUserId) === String(user._id)) {
+                message.info(data.message || "A note was shared with you!");
+            }
+        });
+
         return () => {
             channel.unbind_all();
             channel.unsubscribe();
         };
-    }, [isAuth]);
+    }, [isAuth, user?._id]);
 
     const fetchNotes = async () => {
         if (!isAuth) return;

@@ -1,17 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { Layout, Menu, Typography, Input, List, Button, Space, Tooltip, Divider, Modal, Form, message } from 'antd';
-import {
-    FileTextOutlined,
-    StarOutlined,
-    TagOutlined,
-    DeleteOutlined,
-    FolderOpenOutlined,
-    ShareAltOutlined,
-    PlusOutlined
-} from '@ant-design/icons';
+import { Layout, Menu, Typography, Input, List, Button, Space, Tooltip, Divider, Modal, Form, message, Badge } from 'antd';
+import { FileTextOutlined, StarOutlined, TagOutlined, DeleteOutlined, FolderOpenOutlined, ShareAltOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import Hero from './Hero';
 import Editor from '../../../components/Notes/Editor';
 import ShareModal from '../../../components/Notes/ShareModal';
+import Logo from '../../../components/Misc/Logo';
 import { useNotes } from '../../../context/NoteContext';
 import { useAuth } from '../../../context/Auth';
 
@@ -20,19 +13,7 @@ const { Title, Text } = Typography;
 
 const Home = () => {
     const { user } = useAuth();
-    const {
-        notes,
-        recentShared,
-        activeNote,
-        setActiveNote,
-        createNote,
-        searchNotes,
-        isSidebarCollapsed,
-        setIsSidebarCollapsed,
-        setIsNoteModalOpen,
-        selectedCategory,
-        setSelectedCategory
-    } = useNotes();
+    const { notes, recentShared, activeNote, setActiveNote, createNote, searchNotes, isSidebarCollapsed, setIsSidebarCollapsed, setIsNoteModalOpen, selectedCategory, setSelectedCategory } = useNotes();
     const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
 
@@ -44,6 +25,7 @@ const Home = () => {
     const [form] = Form.useForm();
 
     const filteredNotes = useMemo(() => {
+        const currentUserId = user?._id ? String(user._id) : null;
         switch (selectedCategory) {
             case 'favorites':
                 return notes.filter(n =>
@@ -53,13 +35,27 @@ const Home = () => {
                     })
                 );
             case 'shared':
-                return notes.filter(n => String(n.createdBy?._id || n.createdBy) !== String(user?._id));
+                return notes.filter(n => {
+                    const creatorId = String(n.createdBy?._id || n.createdBy);
+                    return currentUserId ? creatorId !== currentUserId : false;
+                });
             case 'all':
             case 'home':
             default:
-                return notes;
+                return notes.filter(n => {
+                    const creatorId = String(n.createdBy?._id || n.createdBy);
+                    return currentUserId ? creatorId === currentUserId : true;
+                });
         }
     }, [notes, selectedCategory, user]);
+
+    const sharedNotesCount = useMemo(() => {
+        const currentUserId = user?._id ? String(user._id) : null;
+        return notes.filter(n => {
+            const creatorId = String(n.createdBy?._id || n.createdBy);
+            return currentUserId ? creatorId !== currentUserId : false;
+        }).length;
+    }, [notes, user]);
 
     const handleMenuClick = (e) => {
         setSelectedCategory(e.key);
@@ -90,9 +86,9 @@ const Home = () => {
     };
 
     return (
-        <Layout style={{ backgroundColor: 'var(--github-bg)', overflow: 'hidden' }}>
+        <Layout style={{ backgroundColor: 'var(--github-bg)', minHeight: '100vh', overflowX: 'hidden' }}>
             {/* Mobile Sidebar Overlay */}
-            <div 
+            <div
                 className={`sidebar-overlay d-lg-none ${!isSidebarCollapsed ? 'visible' : ''}`}
                 onClick={() => setIsSidebarCollapsed(true)}
             />
@@ -106,25 +102,37 @@ const Home = () => {
                 collapsedWidth={0}
                 onCollapse={(value) => setIsSidebarCollapsed(value)}
                 style={{
-                    borderRight: '1px solid rgba(0,0,0,0.05)',
+                    borderRight: '1px solid var(--github-border)',
                     backgroundColor: '#fff',
-                    minHeight: 0,
-                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                    boxShadow: '4px 0 20px rgba(0,0,0,0.01)',
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    height: '100vh',
+                    maxHeight: '100vh',
+                    overflow: 'hidden',
+                    zIndex: 1050,
+                    transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                    boxShadow: '4px 0 24px rgba(15, 23, 42, 0.03)',
                 }}
                 className="custom-sidebar"
             >
-                <div style={{ padding: '24px 16px 12px 16px' }}>
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                        <Title level={5} style={{ margin: 0, color: 'var(--github-muted)', textTransform: 'uppercase', fontSize: '11px', letterSpacing: '0.8px' }}>
+                <div style={{ padding: '16px 16px 12px 16px' }}>
+                    {/* Top Logo inside Sidebar */}
+                    <div className="d-flex align-items-center mb-3 pb-2" style={{ borderBottom: '1px solid rgba(0,0,0,0.04)' }}>
+                        <Logo />
+                    </div>
+
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                        <Title level={5} style={{ margin: 0, color: 'var(--github-muted)', textTransform: 'uppercase', fontSize: '11px', letterSpacing: '1px', fontWeight: '700' }}>
                             Workspace
                         </Title>
                     </div>
-                    <Input.Search
+                    <Input
                         placeholder="Search notes..."
-                        onSearch={handleSearch}
+                        prefix={<SearchOutlined style={{ color: '#94a3b8', marginRight: '6px' }} />}
+                        onChange={(e) => handleSearch(e.target.value)}
                         allowClear
-                        style={{ marginBottom: '16px' }}
+                        style={{ borderRadius: '10px', padding: '7px 12px', background: '#f8fafc', border: '1px solid #e2e8f0', marginBottom: '12px' }}
                     />
                 </div>
 
@@ -140,21 +148,46 @@ const Home = () => {
                     }}
                     style={{ borderRight: 0, backgroundColor: 'transparent', fontWeight: 500 }}
                     items={[
-                        { key: 'all', icon: <FileTextOutlined />, label: 'All Notes' },
-                        { key: 'favorites', icon: <StarOutlined />, label: 'Favorites' },
-                        { key: 'shared', icon: <ShareAltOutlined />, label: 'Shared with me' },
-                        { key: 'folders', icon: <FolderOpenOutlined />, label: 'Folders' },
+                        { key: 'all', icon: <FileTextOutlined style={{ fontSize: '16px' }} />, label: 'All Notes' },
+                        { key: 'favorites', icon: <StarOutlined style={{ fontSize: '16px' }} />, label: 'Favorites' },
+                        {
+                            key: 'shared',
+                            icon: <ShareAltOutlined style={{ fontSize: '16px' }} />,
+                            label: (
+                                <div className="d-flex justify-content-between align-items-center w-100 pe-1">
+                                    <span>Shared with me</span>
+                                    {sharedNotesCount > 0 && (
+                                        <Badge
+                                            count={sharedNotesCount}
+                                            overflowCount={99}
+                                            style={{
+                                                backgroundColor: '#0969da',
+                                                boxShadow: '0 2px 6px rgba(9, 105, 218, 0.35)',
+                                                fontSize: '11px',
+                                                fontWeight: '700'
+                                            }}
+                                        />
+                                    )}
+                                </div>
+                            )
+                        },
+                        { key: 'folders', icon: <FolderOpenOutlined style={{ fontSize: '16px' }} />, label: 'Folders' },
                         { type: 'divider' },
-                        { key: 'trash', icon: <DeleteOutlined />, label: 'Trash' },
+                        { key: 'trash', icon: <DeleteOutlined style={{ fontSize: '16px' }} />, label: 'Trash' },
                     ]}
                 />
 
-                <Divider style={{ margin: '12px 0' }} />
+                <Divider style={{ margin: '12px 0', borderColor: 'var(--github-border)' }} />
 
-                <div style={{ padding: '0 16px 24px 16px', overflowY: 'auto', maxHeight: 'calc(100vh - 350px)' }}>
-                    <Title level={5} style={{ margin: '0 0 12px 0', color: 'var(--github-muted)', textTransform: 'uppercase', fontSize: '11px', letterSpacing: '0.8px' }}>
-                        {selectedCategory === 'all' ? 'Note List' : `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Notes`}
-                    </Title>
+                <div style={{ padding: '0 16px 24px 16px', overflowY: 'auto', maxHeight: 'calc(100vh - 360px)' }}>
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                        <Title level={5} style={{ margin: 0, color: 'var(--github-muted)', textTransform: 'uppercase', fontSize: '11px', letterSpacing: '1px', fontWeight: '700' }}>
+                            {selectedCategory === 'all' ? 'Note List' : `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Notes`}
+                        </Title>
+                        <Text type="secondary" style={{ fontSize: '11px', fontWeight: '600' }}>
+                            {filteredNotes.length}
+                        </Text>
+                    </div>
                     <List
                         size="small"
                         dataSource={filteredNotes}
@@ -170,44 +203,34 @@ const Home = () => {
                                 }}
                                 style={{
                                     cursor: 'pointer',
-                                    padding: '10px 12px',
-                                    borderRadius: '6px',
-                                    marginBottom: '4px',
-                                    border: 'none',
-                                    backgroundColor: activeNote?._id === note._id ? 'rgba(9, 105, 218, 0.1)' : 'transparent',
-                                    transition: 'background 0.2s',
+                                    padding: '12px 14px',
+                                    borderRadius: '12px',
+                                    marginBottom: '6px',
+                                    border: activeNote?._id === note._id ? '1px solid rgba(9, 105, 218, 0.3)' : '1px solid rgba(0, 0, 0, 0.03)',
+                                    backgroundColor: activeNote?._id === note._id ? 'rgba(9, 105, 218, 0.08)' : '#fff',
+                                    transition: 'all 0.25s ease',
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    alignItems: 'flex-start'
+                                    alignItems: 'flex-start',
+                                    boxShadow: activeNote?._id === note._id ? '0 4px 12px rgba(9, 105, 218, 0.1)' : '0 2px 4px rgba(0, 0, 0, 0.02)'
                                 }}
-                                className="note-list-item"
-                                onMouseEnter={(e) => {
-                                    if (activeNote?._id !== note._id) {
-                                        e.currentTarget.style.backgroundColor = 'rgba(140, 149, 159, 0.05)';
-                                    }
-                                }}
-                                onMouseLeave={(e) => {
-                                    if (activeNote?._id !== note._id) {
-                                        e.currentTarget.style.backgroundColor = 'transparent';
-                                    }
-                                }}
+                                className="note-list-item-card"
                             >
-                                <Text strong style={{ fontSize: '14px', color: activeNote?._id === note._id ? 'var(--github-primary)' : 'inherit' }} ellipsis>
+                                <Text strong style={{ fontSize: '13px', color: activeNote?._id === note._id ? 'var(--github-primary)' : '#1e293b', fontWeight: activeNote?._id === note._id ? '700' : '600' }} ellipsis>
                                     {note.title || 'Untitled Note'}
                                 </Text>
-                                <Text type="secondary" style={{ fontSize: '11px' }}>
-                                    {new Date(note.updatedAt).toLocaleDateString()}
+                                <Text type="secondary" style={{ fontSize: '11px', marginTop: '2px' }}>
+                                    {new Date(note.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                 </Text>
                             </List.Item>
                         )}
                         locale={{
                             emptyText: (
-                                <div style={{ padding: '40px 20px', textAlign: 'center' }}>
-                                    <FileTextOutlined style={{ fontSize: '32px', color: '#cbd5e1', marginBottom: '12px' }} />
+                                <div style={{ padding: '30px 16px', textAlign: 'center' }}>
+                                    <FileTextOutlined style={{ fontSize: '28px', color: '#cbd5e1', marginBottom: '8px' }} />
                                     <br />
-                                    <Text type="secondary" style={{ fontSize: '13px' }}>
-                                        Your digital garden is empty.<br />
-                                        <Text strong style={{ fontSize: '11px', opacity: 0.7 }}>Plant your first note today.</Text>
+                                    <Text type="secondary" style={{ fontSize: '12px' }}>
+                                        No notes here yet.
                                     </Text>
                                 </div>
                             )
@@ -218,7 +241,8 @@ const Home = () => {
             <Layout style={{
                 backgroundColor: 'var(--github-bg)',
                 paddingTop: 64, // Matched with Navbar height
-                transition: 'all 0.3s ease',
+                marginLeft: !isSidebarCollapsed && window.innerWidth >= 992 ? 280 : 0,
+                transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
                 width: '100%',
                 minHeight: '100vh'
             }}>
@@ -277,11 +301,11 @@ const Home = () => {
                     setIsEditModalVisible(false);
                     setActiveNote(null);
                 }}
-                width={750}
+                width={820}
                 centered
-                style={{ top: 20 }}
-                bodyStyle={{ padding: 0 }}
                 destroyOnClose
+                zIndex={1000}
+                className="note-editor-modal"
             >
                 <Editor
                     note={activeNote}

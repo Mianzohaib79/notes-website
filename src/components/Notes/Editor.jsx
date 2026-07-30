@@ -40,34 +40,50 @@ const EditorFallback = () => (
 const EditorContent = ({ note, onShare, onDelete }) => {
     const { user } = useAuth();
     const { updateNote, toggleFavorite, deleteNote } = useNotes();
-    const [content, setContent] = useState('');
     const [title, setTitle] = useState('');
-    const [socket, setSocket] = useState(null);
+    const [initialContent, setInitialContent] = useState('');
+    const contentRef = useRef('');
+    const editor = useRef(null);
+
     const [isSaving, setIsSaving] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     const [showRichText, setShowRichText] = useState(false);
     const [hasError, setHasError] = useState(false);
-    const editor = useRef(null);
 
     const config = useMemo(() => ({
         readonly: false,
-        placeholder: 'Describe your brilliant ideas...',
-        height: 450,
+        placeholder: 'Start writing your brilliant note here...',
+        height: 420,
         toolbarSticky: false,
         theme: 'default',
-        // Minimal configuration to keep it clean
+        wrap: true,
+        direction: 'ltr',
+        buttons: [
+            'bold', 'italic', 'underline', 'strikethrough', '|',
+            'font', 'fontsize', 'paragraph', '|',
+            'ul', 'ol', 'align', '|',
+            'undo', 'redo', '|',
+            'hr', 'table', 'link', '|',
+            'fullsize'
+        ],
+        removeButtons: ['source', 'about'],
+        showXPathInStatusbar: false,
+        showCharsCounter: true,
+        showWordsCounter: true
     }), []);
 
-    // Safety check and Title sync
+    // Sync note data on load or note change
     useEffect(() => {
         if (note?._id) {
-            setContent(note.content || '');
+            const rawContent = note.content || '';
+            contentRef.current = rawContent;
+            setInitialContent(rawContent);
             setTitle(note.title || '');
             setIsLoaded(true);
 
-            // DELAY current rich text mount to avoid Modal animation conflicts
-            const timer = setTimeout(() => setShowRichText(true), 400);
+            // Smooth delayed mount to prevent modal animation glitches
+            const timer = setTimeout(() => setShowRichText(true), 250);
             return () => clearTimeout(timer);
         } else {
             setIsLoaded(false);
@@ -75,48 +91,13 @@ const EditorContent = ({ note, onShare, onDelete }) => {
         }
     }, [note?._id]);
 
-    // Socket.io for real-time collaboration
-    // useEffect(() => {
-    //     if (!note?._id) return;
-
-    //     const apiUrl = import.meta.env.VITE_API_URL;
-    //     let s;
-    //     try {
-    //         s = io(apiUrl);
-    //         setSocket(s);
-    //         s.emit('join-note', note._id);
-    //         s.on('note-updated', (newContent) => {
-    //             if (typeof newContent === 'string' && newContent !== content) {
-    //                 setContent(newContent);
-    //             }
-    //         });
-    //     } catch (err) {
-    //         console.error("Socket error:", err);
-    //     }
-
-    //     return () => {
-    //         if (s) {
-    //             s.emit('leave-note', note._id);
-    //             s.disconnect();
-    //         }
-    //     };
-    // }, [note?._id]);
-
-    // const handleContentChange = (value) => {
-    //     setContent(value);
-    //     if (socket && note?._id) {
-    //         socket.emit('edit-note', { noteId: note._id, content: value });
-    //     }
-    // };
-    const handleContentChange = (value) => {
-        setContent(value);
-    };
-
     const handleSave = async () => {
         if (!note?._id) return;
         setIsSaving(true);
+        const latestContent = editor.current?.value ?? contentRef.current ?? initialContent;
         try {
-            await updateNote(note._id, { title, content });
+            await updateNote(note._id, { title, content: latestContent });
+            contentRef.current = latestContent;
             message.success('Note saved successfully');
         } catch (error) {
             message.error('Failed to save note');
@@ -147,48 +128,44 @@ const EditorContent = ({ note, onShare, onDelete }) => {
         }
     };
 
-    // Ultra-robust comparison with trim and String conversion to handle all potential data types
     const isFavorite = user?.favorites?.some(favId =>
         favId && note?._id && String(favId).trim() === String(note._id).trim()
     );
 
     if (!note || !isLoaded) {
         return (
-            <div style={{ padding: '100px', textAlign: 'center' }}>
-                <Spin size="large" tip="Synthesizing note..." />
+            <div style={{ padding: '80px', textAlign: 'center', backgroundColor: '#fff' }}>
+                <Spin size="large" tip="Opening note workspace..." />
             </div>
         );
     }
 
     return (
-        <div className="editor-container fade-in" style={{ padding: window.innerWidth < 768 ? '12px' : '32px', backgroundColor: 'var(--github-bg)', minHeight: '600px', borderRadius: '24px' }}>
-            <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexDirection: window.innerWidth < 768 ? 'column' : 'row', gap: '14px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1 }}>
+        <div className="editor-container fade-in" style={{ padding: window.innerWidth < 768 ? '16px' : '28px 32px', backgroundColor: '#fff', borderRadius: '24px' }}>
+            <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexDirection: window.innerWidth < 768 ? 'column' : 'row', gap: '14px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, width: '100%' }}>
                     <Input
                         variant="borderless"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        style={{ fontSize: window.innerWidth < 768 ? '20px' : '28px', fontWeight: '800', padding: 0, color: 'var(--github-text)', letterSpacing: '-0.5px' }}
-                        placeholder="Untitled Masterpiece..."
+                        style={{ fontSize: window.innerWidth < 768 ? '20px' : '24px', fontWeight: '800', padding: 0, color: 'var(--github-text)', letterSpacing: '-0.3px' }}
+                        placeholder="Untitled Note..."
                     />
                     <Button
                         type="text"
-                        icon={isFavorite ? <StarFilled style={{ color: '#f59e0b' }} /> : <StarOutlined />}
+                        icon={isFavorite ? <StarFilled style={{ color: '#f59e0b', fontSize: '22px' }} /> : <StarOutlined style={{ fontSize: '22px', color: '#94a3b8' }} />}
                         onClick={handleFavorite}
-                        className="hover-scale"
-                        style={{ fontSize: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        className="hover-scale p-0"
+                        style={{ width: '38px', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     />
                 </div>
-                <Space size="small" wrap
-                    style={{
-                        width: window.innerWidth < 768 ? '100%' : 'auto'
-                    }}>
+                <Space size="middle" wrap style={{ width: window.innerWidth < 768 ? '100%' : 'auto', justifyContent: 'flex-end' }}>
                     <Popconfirm
                         title="Delete this note?"
-                        description="This action cannot be undone."
+                        description="Are you sure you want to delete this note?"
                         onConfirm={handleDelete}
-                        okText="Yes"
-                        cancelText="No"
+                        okText="Delete"
+                        cancelText="Cancel"
                         okButtonProps={{ danger: true, className: 'rounded-pill' }}
                         cancelButtonProps={{ className: 'rounded-pill' }}
                     >
@@ -198,7 +175,7 @@ const EditorContent = ({ note, onShare, onDelete }) => {
                             icon={<DeleteOutlined />}
                             loading={isDeleting}
                             className="hover-scale"
-                            style={{ fontSize: '18px' }}
+                            style={{ fontSize: '17px', borderRadius: '10px' }}
                         />
                     </Popconfirm>
                     <Button
@@ -207,7 +184,7 @@ const EditorContent = ({ note, onShare, onDelete }) => {
                         icon={<ShareAltOutlined />}
                         onClick={onShare}
                         className="btn-premium border-primary text-primary"
-                        style={{ background: 'transparent' }}
+                        style={{ background: 'transparent', borderRadius: '10px' }}
                     >
                         Share
                     </Button>
@@ -217,51 +194,56 @@ const EditorContent = ({ note, onShare, onDelete }) => {
                         onClick={handleSave}
                         loading={isSaving}
                         className="btn-premium"
+                        style={{ borderRadius: '10px', fontWeight: 600, padding: '6px 20px' }}
                     >
                         Save Note
                     </Button>
                 </Space>
             </div>
 
-            <div className="editor-workspace shadow-sm" style={{ borderRadius: '16px', border: '1px solid var(--github-border)', overflow: 'hidden', background: '#fff' }}>
+            <div className="editor-workspace shadow-sm" style={{ borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden', background: '#fff' }}>
                 {!showRichText || hasError ? (
                     <Input.TextArea
-                        value={content || ''}
-                        onChange={(e) => handleContentChange(e.target.value)}
-                        placeholder="Start your thoughts here..."
+                        value={contentRef.current || initialContent}
+                        onChange={(e) => {
+                            contentRef.current = e.target.value;
+                        }}
+                        placeholder="Start typing your thoughts here..."
                         className="form-control-premium border-0"
                         style={{
-                            height: window.innerWidth < 768 ? '300px' : '450px',
-                            padding: '24px',
-                            fontSize: '16px',
+                            height: window.innerWidth < 768 ? '300px' : '420px',
+                            padding: '20px 24px',
+                            fontSize: '15px',
                             border: 'none',
                             resize: 'none',
+                            lineHeight: '1.7'
                         }}
                     />
                 ) : (
-                    <div className="jodit-wrapper" style={{ minHeight: window.innerWidth < 768 ? '300px' : '450px', marginBottom: '20px', width: '100%', overflowX: 'hidden', }}>
+                    <div className="jodit-wrapper" style={{ minHeight: window.innerWidth < 768 ? '300px' : '420px', width: '100%', overflowX: 'hidden' }}>
                         <JoditEditor
                             ref={editor}
-                            value={content || ''}
+                            value={initialContent}
                             config={config}
                             tabIndex={1}
+                            onBlur={(newContent) => {
+                                contentRef.current = newContent;
+                            }}
                             onChange={(newContent) => {
-                                setContent(newContent);
+                                contentRef.current = newContent;
                             }}
                         />
-
                     </div>
                 )}
             </div>
             {hasError && (
-                <div style={{ marginTop: '16px', textAlign: 'center' }}>
+                <div style={{ marginTop: '12px', textAlign: 'center' }}>
                     <Text type="secondary" style={{ fontSize: '12px' }}>
-                        <InfoCircleOutlined /> Switched to stable compatibility mode.
+                        <InfoCircleOutlined /> Switched to fallback compatibility editor.
                     </Text>
                 </div>
             )}
         </div>
-
     );
 };
 

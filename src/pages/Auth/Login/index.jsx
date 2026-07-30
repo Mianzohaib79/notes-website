@@ -86,7 +86,7 @@ const Login = () => {
                         </Item>
 
                         <div className="d-flex justify-content-between align-items-center mb-4" style={{ fontSize: '13px' }}>
-                            <Link to="/auth/forgot-password" style={{ fontWeight: 500 }}>Forgot Password?</Link>
+                            {/* <Link to="/auth/forgot-password" style={{ fontWeight: 500 }}>Forgot Password?</Link> */}
                             <Link to="/auth/register" style={{ fontWeight: 500 }}>Create Account</Link>
                         </div>
 

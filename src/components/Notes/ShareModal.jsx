@@ -48,11 +48,14 @@ const ShareModal = ({ visible, note, onClose, onRefresh }) => {
 
     return (
         <Modal
-            title={<Title level={4} style={{ margin: 0 }}>Share "{note?.title}"</Title>}
+            title={<Title level={4} style={{ margin: 0, fontWeight: 700 }}>Share "{note?.title}"</Title>}
             open={visible}
             onCancel={onClose}
             footer={null}
             width={500}
+            zIndex={1300}
+            centered
+            className="premium-modal"
         >
             <div style={{ marginBottom: '24px', marginTop: '16px' }}>
                 <Text strong>Add people</Text>

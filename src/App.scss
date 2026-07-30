@@ -45,12 +45,86 @@ main {
 
 /* Layout Spacing Fixes */
 .home-hero {
-    padding-top: 80px !important;
+    padding-top: 40px !important;
     padding-bottom: 24px !important;
+}
+
+/* Custom Sidebar Item Styling */
+.custom-sidebar {
+    .ant-menu-item {
+        border-radius: 10px !important;
+        margin: 4px 8px !important;
+        width: calc(100% - 16px) !important;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        font-weight: 500 !important;
+
+        &:hover {
+            background-color: rgba(9, 105, 218, 0.06) !important;
+            color: var(--github-primary) !important;
+            transform: translateX(3px);
+        }
+
+        &.ant-menu-item-selected {
+            background: linear-gradient(90deg, rgba(9, 105, 218, 0.12) 0%, rgba(9, 105, 218, 0.03) 100%) !important;
+            color: var(--github-primary) !important;
+            font-weight: 700 !important;
+            border-left: 3px solid var(--github-primary) !important;
+        }
+    }
+}
+
+.sidebar-search-input {
+    .ant-input {
+        border-radius: 10px 0 0 10px !important;
+        font-size: 13px !important;
+        padding: 8px 12px !important;
+        background: #f8fafc !important;
+        border-color: #e2e8f0 !important;
+        transition: all 0.3s ease !important;
+
+        &:focus {
+            background: #fff !important;
+            border-color: var(--github-primary) !important;
+            box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.1) !important;
+        }
+    }
+
+    .ant-input-search-button {
+        border-radius: 0 10px 10px 0 !important;
+        border-color: #e2e8f0 !important;
+        background: #f1f5f9 !important;
+    }
+}
+
+.note-list-item-card {
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    border: 1px solid transparent !important;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06) !important;
+        border-color: rgba(9, 105, 218, 0.2) !important;
+    }
+}
+
+/* Note Card Premium Effects */
+.note-card {
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.7) !important;
+
+    &:hover {
+        transform: translateY(-8px) scale(1.015);
+        box-shadow: var(--card-hover-shadow) !important;
+        border-color: rgba(9, 105, 218, 0.3) !important;
+    }
 }
 
 .favorite-btn {
     transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    &:hover {
+        transform: scale(1.2);
+    }
 
     &:active {
         transform: scale(1.4);
@@ -180,12 +254,20 @@ body {
         opacity: 0 !important;
     }
 
-    /* Desktop Sider Fixes */
+    /* Desktop Sider Fixes - Fixed Dashboard Sidebar */
     .ant-layout-sider.custom-sidebar {
-        position: relative !important;
-        height: auto !important;
-        transform: none !important;
-        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.01) !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
+        overflow: hidden !important;
+        z-index: 1050 !important;
+        border-right: 1px solid var(--github-border) !important;
+        border-radius: 0 !important;
+        border-bottom: none !important;
+        box-shadow: 4px 0 20px rgba(15, 23, 42, 0.03) !important;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
 }
 
@@ -196,8 +278,67 @@ body {
     overflow-x: hidden !important;
 }
 
+/* Footer Interactive Animations */
+.footer-link {
+    width: fit-content !important;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+
+    &:hover {
+        color: var(--github-primary) !important;
+        transform: translateX(4px);
+    }
+}
+
+.social-hover-btn {
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+
+    &:hover {
+        background-color: var(--github-primary) !important;
+        color: #ffffff !important;
+        transform: translateY(-4px) scale(1.08);
+        box-shadow: 0 8px 16px rgba(9, 105, 218, 0.25) !important;
+    }
+}
+
 .jodit-toolbar__box {
     flex-wrap: wrap !important;
+}
+
+/* Premium Edit Note Modal & Jodit Custom Styling */
+.note-editor-modal {
+    .ant-modal-content {
+        padding: 0 !important;
+        border-radius: 24px !important;
+        overflow: hidden !important;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.15) !important;
+        border: 1px solid rgba(226, 232, 240, 0.8) !important;
+    }
+}
+
+.jodit-container {
+    border: none !important;
+    font-family: inherit !important;
+
+    .jodit-toolbar__box {
+        border-bottom: 1px solid #e2e8f0 !important;
+        background: #f8fafc !important;
+        padding: 6px 10px !important;
+    }
+
+    .jodit-workplace {
+        background: #ffffff !important;
+        min-height: 420px !important;
+    }
+
+    .jodit-wysiwyg {
+        padding: 20px 24px !important;
+        font-size: 15px !important;
+        line-height: 1.7 !important;
+        color: #1e293b !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        white-space: pre-wrap !important;
+    }
 }
 
 @media (max-width: 768px) {

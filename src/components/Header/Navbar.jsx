@@ -46,11 +46,11 @@ const Navbar = () => {
     }, [isNoteModalOpen]);
 
     const items = [
-        {
-            key: 'updateProfile',
-            label: 'Update Profile',
-            onClick: () => navigate('/update-profile')
-        },
+        // {
+        //     key: 'updateProfile',
+        //     label: 'Update Profile',
+        //     onClick: () => navigate('/update-profile')
+        // },
         {
             key: 'logout',
             label: 'Logout',
@@ -59,13 +59,15 @@ const Navbar = () => {
         }
     ];
 
+    const isDesktopSidebarOpen = isAuth && isHomePage && !isSidebarCollapsed && window.innerWidth >= 992;
+
     const navbarStyle = {
         position: 'fixed',
         top: 0,
-        left: 0,
+        left: isDesktopSidebarOpen ? '280px' : 0,
         right: 0,
         zIndex: 1100,
-        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
         transform: isVisible ? 'translateY(0)' : 'translateY(-100%)',
         minHeight: '64px'
     };
@@ -85,9 +87,16 @@ const Navbar = () => {
                                 style={{ width: '40px', height: '40px', borderRadius: '10px' }}
                             />
                         )}
-                        <div className="navbar-brand m-0 p-0 d-flex align-items-center hover-scale">
-                            <Logo />
-                        </div>
+                        {!isDesktopSidebarOpen && (
+                            <div className="navbar-brand m-0 p-0 d-flex align-items-center hover-scale">
+                                <Logo />
+                            </div>
+                        )}
+                        {isDesktopSidebarOpen && (
+                            <span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--github-text)', marginLeft: '6px' }}>
+                                Notes
+                            </span>
+                        )}
                     </div>
 
                     {/* Right Side Group (Permanent Icons + Toggler) */}
@@ -95,24 +104,24 @@ const Navbar = () => {
                         <div className="d-flex align-items-center">
                             {isAuth && (
                                 <Dropdown menu={{ items }} placement="bottomRight" arrow trigger={['click']}>
-                                    <Button 
-                                        icon={<SettingOutlined />} 
+                                    <Button
+                                        icon={<SettingOutlined />}
                                         className="d-flex align-items-center justify-content-center border-0 shadow-sm hover-scale"
-                                        style={{ height: '40px', width: '40px', borderRadius: '12px', background: 'white' }} 
+                                        style={{ height: '40px', width: '40px', borderRadius: '12px', background: 'white' }}
                                     />
                                 </Dropdown>
                             )}
                             {!isAuth && (
                                 <div className="d-none d-sm-flex gap-2">
-                                    <Button 
-                                        type='text' 
+                                    <Button
+                                        type='text'
                                         className='nav-link-custom fw-600'
                                         onClick={() => { navigate("/auth/login") }}
                                     >
                                         Login
                                     </Button>
-                                    <Button 
-                                        type='primary' 
+                                    <Button
+                                        type='primary'
                                         className='btn-premium'
                                         onClick={() => { navigate("/auth/register") }}
                                     >
@@ -121,15 +130,15 @@ const Navbar = () => {
                                 </div>
                             )}
                         </div>
-                        
+
                         {/* Bootstrap Toggler - Always visible below 992px */}
-                        <button 
-                            className="navbar-toggler border-0 shadow-none p-0 ms-2" 
-                            type="button" 
-                            data-bs-toggle="collapse" 
-                            data-bs-target="#navbarSupportedContent" 
-                            aria-controls="navbarSupportedContent" 
-                            aria-expanded="false" 
+                        <button
+                            className="navbar-toggler border-0 shadow-none p-0 ms-2"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#navbarSupportedContent"
+                            aria-controls="navbarSupportedContent"
+                            aria-expanded="false"
                             aria-label="Toggle navigation"
                         >
                             <span className="navbar-toggler-icon" style={{ width: '22px', height: '22px' }}></span>
@@ -140,36 +149,36 @@ const Navbar = () => {
                     <div className="collapse navbar-collapse flex-grow-1" id="navbarSupportedContent">
                         <ul className="navbar-nav mx-auto mb-2 mb-lg-0 gap-2 gap-lg-4 mt-3 mt-lg-0">
                             <li className="nav-item">
-                                <Link 
-                                    to="/" 
+                                <Link
+                                    to="/"
                                     onClick={() => {
                                         setSelectedCategory('home');
                                         const collapse = document.getElementById('navbarSupportedContent');
                                         if (collapse && collapse.classList.contains('show')) {
                                             collapse.classList.remove('show');
                                         }
-                                    }} 
+                                    }}
                                     className={`nav-link nav-link-custom px-0 ${location.pathname === '/' && selectedCategory === 'home' ? 'active' : ''}`}
                                 >
                                     Home
                                 </Link>
                             </li>
                             <li className="nav-item">
-                                <Link 
-                                    to="/" 
+                                <Link
+                                    to="/"
                                     onClick={() => {
                                         setSelectedCategory('all');
                                         const collapse = document.getElementById('navbarSupportedContent');
                                         if (collapse && collapse.classList.contains('show')) {
                                             collapse.classList.remove('show');
                                         }
-                                    }} 
+                                    }}
                                     className={`nav-link nav-link-custom px-0 ${location.pathname === '/' && selectedCategory === 'all' ? 'active' : ''}`}
                                 >
                                     All Notes
                                 </Link>
                             </li>
-                            
+
                             {/* Mobile Auth Links (only visible on extra small screens) */}
                             {!isAuth && (
                                 <li className="nav-item d-sm-none mt-3">
