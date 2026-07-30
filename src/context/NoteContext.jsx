@@ -58,9 +58,12 @@ export const NoteProvider = ({ children }) => {
         });
 
         return () => {
-            channel.unbind_all();
-            pusher.unsubscribe("notes-channel");
-            pusher.disconnect();
+            if (channel) {
+                channel.unbind_all();
+            }
+            if (pusher) {
+                pusher.disconnect();
+            }
         };
     }, [isAuth]);
 
