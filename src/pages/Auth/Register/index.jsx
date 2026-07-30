@@ -35,7 +35,7 @@ const Register = () => {
 
         setIsProcessing(true)
 
-        const apiUrl = import.meta.env.VITE_API_URL || "https://notes-website-ba6w.vercel.app"
+        const apiUrl = import.meta.env.VITE_API_URL || "https://notes-website-ba6w.vercel.app";
         axios.post(`${apiUrl}/auth/register`, user)
 
             .then((res) => {
