@@ -1,6 +1,7 @@
 import { Button, Form, Input, Typography } from "antd"
 import { useState } from "react"
 import { useAuth } from "../../../context/Auth"
+import { useNotes } from "../../../context/NoteContext"
 import { Link } from "react-router-dom"
 import axios from "axios"
 import Logo from "../../../components/Misc/Logo"
@@ -14,6 +15,7 @@ const initialState = { email: "", password: "" }
 const Login = () => {
 
     const { readProfile } = useAuth()
+    const { setSelectedCategory } = useNotes()
 
 
     const [state, setState] = useState(initialState)
@@ -38,6 +40,7 @@ const Login = () => {
                 const { status, data } = res
                 if (status === 200) {
                     localStorage.setItem("jwt", data.token)
+                    if (setSelectedCategory) setSelectedCategory('home')
                     readProfile(data.token)
                     window.toastify("Login successful", "success")
                 } else {

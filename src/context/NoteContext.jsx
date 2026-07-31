@@ -221,7 +221,10 @@ export const NoteProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        if (isAuth) fetchNotes();
+        if (isAuth) {
+            fetchNotes();
+            setSelectedCategory('home');
+        }
     }, [isAuth]);
 
     const [selectedCategory, setSelectedCategory] = useState('home');
